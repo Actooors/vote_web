@@ -4,11 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Fastclick from 'fastclick'
-import Element from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
 import 'normalize.css'
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
 
-Vue.use(Element)
+Vue.use(iView)
+
 Vue.config.productionTip = false
 
 Fastclick.attach(document.body)
