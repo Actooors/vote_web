@@ -38,7 +38,7 @@ module.exports = {
       'group': resolve('src/group'),
       'router': resolve('src/router'),
       'store': resolve('src/store'),
-      'interceptor': resolve('src/interceptor'),
+      'interceptors': resolve('src/interceptors'),
       'pages': resolve('src/pages')
     }
   },

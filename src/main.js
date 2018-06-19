@@ -7,6 +7,7 @@ import Fastclick from 'fastclick'
 import 'normalize.css'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import 'interceptors/interceptor'
 
 Vue.use(iView)
 
