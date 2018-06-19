@@ -12,7 +12,7 @@
       <tbody>
       <tr>
         <th>序号</th>
-        <td v-for="(_,index) in items">{{index}}</td>
+        <td v-for="(item_,index) in items">{{index}}</td>
       </tr>
       <tr>
         <th>姓名</th>
@@ -93,13 +93,13 @@
         this.admin = localStorage.getItem('identity') === '2'
       },
       loadData() {
-        let order = this.status ? '1' : '0'
+        let order = this.switch1 ? '1' : '0'
         this.getIdentity()
         this.type = this.$route.params.type
-        let url = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Vote`
+        let URL = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Vote`
         axios({
-          url: url,
-          method: "post",
+          url: URL,
+          method: "POST",
           data: {
             "order": order
           }
@@ -127,6 +127,7 @@
         for (let i = 0; i < this.votes.length; i++) {
           this.votes[i] = true
         }
+        this.$forceUpdate()
       },
       handleOnClickConfirm() {
         //请求投票接口

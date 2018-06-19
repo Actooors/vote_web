@@ -7,7 +7,7 @@
       </div>
       <div class="row">
         <label for="password">密码</label>
-        <input type="text" id="password" v-model="loginForm.password">
+        <input type="password" id="password" v-model="loginForm.password">
       </div>
       <input type="submit" value="登录" @click="handleOnClickLogin">
     </div>
