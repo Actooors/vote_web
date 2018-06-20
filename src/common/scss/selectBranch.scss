@@ -1,11 +1,11 @@
 $btn-color: #FB5A5A;
 .wrapper{
-  font-family: 'HYShangWeiShouShuW';
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100%;
   .choice {
+    font-family: 'HYShangWeiShouShuW';
     height: 100px;
     width: 300px;
     background: $btn-color;

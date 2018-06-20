@@ -1,6 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="wrapper">
+      <Button type="error" style="position: fixed; right:5%; top:5%; font-size: .8rem;" @click="$router.push('/logout')">注销</Button>
       <!--<div>-->
       <!--<router-link :to="{name:'selectBranch'}">重新选择</router-link>-->
       <!--<router-link :to="{name:'logout'}">注销</router-link>-->
