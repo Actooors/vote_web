@@ -11,7 +11,7 @@ axios.interceptors.request.use((config) => {
 
 
 axios.interceptors.response.use((res) => {
-  switch (config.status) {
+  switch (res.status) {
     case 401:
       localStorage.clear()
       location.path = '/login'
