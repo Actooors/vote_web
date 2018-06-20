@@ -337,4 +337,7 @@
     text-align: center;
     font-size: 1rem;
   }
+  .ivu-checkbox-inner{
+    transition: all 0.05s linear !important;
+  }
 </style>
