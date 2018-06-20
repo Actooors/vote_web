@@ -8,6 +8,7 @@ import 'normalize.css'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import 'interceptors/interceptor'
+import 'common/scss/font.css'
 
 Vue.use(iView)
 

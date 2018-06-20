@@ -1,0 +1,78 @@
+.page-wrapper, .wrapper {
+  height: 100%;
+}
+
+tr th {
+  background: #E0EEFC;
+  font-size: 1rem;
+  line-height: 1.2em;
+}
+
+table {
+  border: 1.5px solid #E0EEFC;
+}
+
+tr:not(.middle-tr) {
+  height: 3.5rem;
+}
+
+.middle-tr {
+  height: 8rem;
+}
+
+.middle-td {
+  font-size: .9rem;
+  border-top: 1.5px solid #E0EEFC;
+  border-bottom: 1.5px solid #E0EEFC;
+  text-align: justify;
+  text-align-last: justify;
+}
+
+td {
+  font-size: 1rem;
+}
+
+tr, th, td {
+  width: 1em;
+  padding: .3rem .35rem;
+  line-height: 1.2em;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .vote-title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1.6rem;
+  }
+  .vote-box {
+    background: white;
+    padding: 2rem;
+    border-radius: .8rem;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .1);
+    .switch-box {
+      display: flex;
+      justify-content: flex-end;
+      margin: 1rem;
+      label {
+        font-size: 1rem;
+      }
+    }
+  }
+  .submit-box {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    .submit {
+      border: none;
+      background: #FF3333;
+      font-size: 1.5rem;
+      color: white;
+      padding: .5rem 4rem;
+      border-radius: .7rem;
+      margin: 0 1rem;
+    }
+  }
+}

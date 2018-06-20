@@ -1,0 +1,34 @@
+<template>
+  <div class="wrapper">
+    <div class="choice-box">
+      <div class="choice" @click="handleOnClickChoice(0)">
+        党委委员计票
+      </div>
+      <div class="choice" @click="handleOnClickChoice(1)">
+        纪委委员计票
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "selectBranch",
+    methods: {
+      handleOnClickChoice(choice) {
+        switch (choice) {
+          case 0:
+            this.$router.push("/vote/party")
+            break;
+          case 1:
+            this.$router.push("/vote/discipline")
+            break;
+        }
+      }
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+  @import '../../common/scss/selectBranch';
+</style>

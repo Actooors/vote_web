@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Login from 'pages/login/login'
-import Select from 'pages/select/select'
+import SelectBranch from 'pages/selectBranch/selectBranch'
 import Vote from 'pages/vote/vote'
 
 Vue.use(Router)
@@ -25,9 +25,9 @@ var router = new Router({
         next({name: 'login'})
       }
     }, {
-      path: '/select',
-      name: 'select',
-      component: Select,
+      path: '/selectBranch',
+      name: 'selectBranch',
+      component: SelectBranch,
       meta: {
         requiresAuth: ['1', '2']
       }
@@ -73,14 +73,14 @@ router.beforeEach((to, from, next) => {
       //有token，需要验证
       if (!requiresAuth.some(records => userIdentity === records)) {
         //当前身份无权访问该页面，回到选择页面
-        next({name: 'select'})
+        next({name: 'selectBranch'})
         return
       }
     }
   }
 
   //匹配并修改单个页面标题，若没有设置页面标题则设为父组件标题，若标题树为空，则置为defaultTitle
-  const defaultTitle = "上大投票系统"
+  const defaultTitle = "中国共产党上海大学第三次代表大会计票系统"
   let len = to.matched.length
   for (var i = len - 1; i >= 0 && !to.matched[i].meta.title; i--) ;
   if (i >= 0) {

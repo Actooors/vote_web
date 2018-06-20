@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="page-wrapper">
     <div class="login-box">
       <div class="row">
-        <label for="username">工号</label>
-        <input type="text" id="username" v-model="loginForm.username">
+        <h1 class="login-title">账户登录</h1>
       </div>
       <div class="row">
-        <label for="password">密码</label>
-        <input type="password" id="password" v-model="loginForm.password">
+        <input type="text" id="username" class="input" v-model="loginForm.username" placeholder="用户名">
       </div>
-      <input type="submit" value="登录" @click="handleOnClickLogin">
+      <div class="row">
+        <input type="password" id="password" class="input" v-model="loginForm.password" placeholder="密码">
+      </div>
+      <input type="submit" class="submit" value="登  录" @click="handleOnClickLogin">
     </div>
   </div>
 </template>
@@ -44,7 +45,7 @@
             if (this.$route.query.hasOwnProperty('redirect'))
               this.$router.push({path: this.$route.query.redirect})
             else
-              this.$router.push({name: "select"})
+              this.$router.push({name: "selectBranch"})
           } else {
             this.$Message.warning("请检查工号或密码是否正确")
           }
@@ -55,3 +56,7 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  @import '../../common/scss/login';
+</style>
