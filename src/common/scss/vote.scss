@@ -44,6 +44,14 @@ tr, th, td {
   line-height: 1.2em;
 }
 
+.percentage-td {
+  font-size: .85rem;
+  padding: {
+    left: .1rem;
+    right: .1rem;
+  }
+}
+
 .wrapper {
   display: flex;
   justify-content: center;
@@ -87,15 +95,23 @@ tr, th, td {
   }
 }
 
-.demo-spin-icon-load{
+.demo-spin-icon-load {
   animation: ani-demo-spin 1s linear infinite;
 }
+
 @keyframes ani-demo-spin {
-  from { transform: rotate(0deg);}
-  50%  { transform: rotate(180deg);}
-  to   { transform: rotate(360deg);}
+  from {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
-.demo-spin-col{
+
+.demo-spin-col {
   height: 100px;
   position: relative;
   border: 1px solid #eee;

@@ -11,10 +11,10 @@
       <div class="vote-box">
         <h1 class="vote-title">{{this.title}}</h1>
         <div class="vote-vice-title">
-          <div class="count" v-if="!admin">
+          <div class="count">
             已计票{{count}}人
           </div>
-          <div class="switch-box" v-else>
+          <div class="switch-box" v-if="admin">
             <label for="switch2">显示百分比</label>
             <i-switch v-model="switchPercentage" @on-change="handleOnSwitch" id="switch2"></i-switch>
             <span>&nbsp;&nbsp;&nbsp;</span>
@@ -45,7 +45,7 @@
           </tr>
           <tr v-else>
             <th>{{this.switchPercentage?'百分比(%)':'票数'}}</th>
-            <td v-for="(item,index) in items">
+            <td v-for="(item,index) in items" :class="{'percentage-td':percentageStyle}">
               {{item.num}}
             </td>
           </tr>
@@ -86,22 +86,32 @@
         modal: false,
         title: '',
         count: 0,
-        spin: false
+        spin: false,
+        interval: null,
+        percentageStyle: false
       }
+    },
+    beforeRouteLeave(from, to, next) {
+      console.log("clearInterval", this.interval)
+      clearInterval(this.interval)
+      next()
     },
     created() {
       this.loadData()
       let that = this
-      //管理员界面5秒一刷新
+      //管理员界面10秒一刷新
       if (this.admin) {
-        setInterval(() => {
-          that.loadData()
-        }, 5000)
+        this.interval = setInterval(() => {
+          // that.loadData() //使用这个会莫名其妙一下请求好几次，我猜是axios异步的问题，懒得改了
+          location.reload()
+          console.log('interval刷新')
+        }, 10000)
       }
     },
     watch: {
       '$route'() {
         this.loadData()
+        console.log('路由改变刷新')
       }
     },
     methods: {
@@ -109,28 +119,58 @@
         this.admin = localStorage.getItem('identity') === '2'
       },
       initCount() {
-        axios({
-          url: `${apiPath}/user/${this.type === 'party' ? 'party' : 'group'}VoteNum`,
-          method: 'post'
-        }).then((res) => {
-          if (res.data.code === 'SUCCESS') {
-            this.count = res.data.data.countNum
-          } else {
+        if (!this.admin) {
+          //管理员
+          axios({
+            url: `${apiPath}/user/${this.type === 'party' ? 'party' : 'group'}VoteNum`,
+            method: 'post'
+          }).then((res) => {
+            if (res.data.code === 'SUCCESS') {
+              this.count = res.data.data.countNum
+            } else {
+              this.count = 0
+              console.error("请求计票结果出错")
+            }
+          }).catch((err) => {
             this.count = 0
             console.error("请求计票结果出错")
-          }
-        }).catch((err) => {
-          this.count = 0
-          console.error("请求计票结果出错")
-        })
+          })
+        } else {
+          //计票员（写两遍我也很无奈啊
+          axios({
+            url: `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}AllvoteNum`,
+            method: 'get'
+          }).then((res) => {
+            if (res.data.code === 'SUCCESS') {
+              this.count = res.data.data
+            } else {
+              this.count = 0
+              console.error("请求计票结果出错")
+            }
+          }).catch((err) => {
+            this.count = 0
+            console.error("请求计票结果出错")
+          })
+        }
+
         // let cnt = parseInt(localStorage.getItem(`${this.type === 'party' ? 'party' : 'group'}_count`))
         // this.count = cnt ? cnt : 0
       },
       loadData() {
+        let that = this
+
+        // 用percentageStyle延时class的添加（在response后才改变class），以防止style突变的丑陋
+        function gotData() {
+          that.percentageStyle = that.switchPercentage
+        }
+
+        this.switchPercentage = localStorage.getItem('switch_percentage') === '1'
+        this.switchSort = localStorage.getItem('switch_sort') === '1'
         let order = this.switchSort ? '1' : '0'
-        this.getIdentity()
-        this.initCount()
         this.type = this.$route.params.type
+        this.getIdentity()
+
+        this.initCount()
         if (this.type === 'party') {
           this.title = '中国共产党上海大学第三届党委委员会委员'
         } else {
@@ -161,13 +201,17 @@
           }
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
+          gotData()
         }).catch((err) => {
           this.$Message.warning(`出错，提示：${err}`)
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
+          gotData()
         })
       },
       handleOnSwitch() {
+        localStorage.setItem('switch_percentage', this.switchPercentage ? '1' : '0')
+        localStorage.setItem('switch_sort', this.switchSort ? '1' : '0')
         this.loadData()
       },
       handleOnClickSubmit() {
