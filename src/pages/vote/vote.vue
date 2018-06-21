@@ -1,21 +1,32 @@
 <template>
   <div class="page-wrapper">
     <div class="wrapper">
-      <Button type="error" style="position: fixed; right:5%; top:5%; font-size: .8rem;" @click="$router.push('/logout')">注销</Button>
+      <Button type="error" style="position: fixed; right:5%; top:5%; font-size: .8rem;"
+              @click="$router.push('/logout')">注销
+      </Button>
       <!--<div>-->
       <!--<router-link :to="{name:'selectBranch'}">重新选择</router-link>-->
       <!--<router-link :to="{name:'logout'}">注销</router-link>-->
       <!--</div>-->
       <div class="vote-box">
         <h1 class="vote-title">{{this.title}}</h1>
-        <div class="switch-box" v-if="admin">
-          <label for="switch">按票数排序</label>
-          <i-switch v-model="switch1" @on-change="handleOnSwitch" id="switch"></i-switch>
+        <div class="vote-vice-title">
+          <div class="count" v-if="!admin">
+            已计票{{count}}人
+          </div>
+          <div class="switch-box" v-else>
+            <label for="switch2">显示百分比</label>
+            <i-switch v-model="switchPercentage" @on-change="handleOnSwitch" id="switch2"></i-switch>
+            <span>&nbsp;&nbsp;&nbsp;</span>
+            <label for="switch1">按票数排序</label>
+            <i-switch v-model="switchSort" @on-change="handleOnSwitch" id="switch1"></i-switch>
+          </div>
         </div>
+
         <table cellspacing="0" cellpadding="0">
           <tbody>
           <tr>
-            <th>{{switch1?'排序':'编号'}}</th>
+            <th>{{switchSort?'排序':'编号'}}</th>
             <td v-for="(_,index) in items">{{index+1}}</td>
           </tr>
           <tr class="middle-tr">
@@ -33,7 +44,7 @@
             </td>
           </tr>
           <tr v-else>
-            <th>票数</th>
+            <th>{{this.switchPercentage?'百分比(%)':'票数'}}</th>
             <td v-for="(item,index) in items">
               {{item.num}}
             </td>
@@ -54,6 +65,8 @@
       @on-ok="handleOnClickConfirm">
       <p>共{{items.length}}人，您已选{{voteNum}}人，确定吗？</p>
     </Modal>
+
+    <Spin size="large" fix v-if="spin"></Spin>
   </div>
 </template>
 
@@ -64,150 +77,27 @@
     name: "vote",
     data() {
       return {
-        items: [
-          {
-            "name": "张可惜",
-            "num": 2
-          },
-          {
-            "name": "李四",
-            "num": 1
-          },
-          {
-            "name": "王五",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          },
-          {
-            "name": "佚名",
-            "num": 1
-          }
-        ],
+        items: [],
         votes: [],
         admin: false,
         type: '',
-        switch1: false,
+        switchSort: false,
+        switchPercentage: false,
         modal: false,
-        title: ''
+        title: '',
+        count: 0,
+        spin: false
       }
     },
     created() {
       this.loadData()
+      let that = this
+      //管理员界面5秒一刷新
+      if (this.admin) {
+        setInterval(() => {
+          that.loadData()
+        }, 5000)
+      }
     },
     watch: {
       '$route'() {
@@ -218,9 +108,28 @@
       getIdentity() {
         this.admin = localStorage.getItem('identity') === '2'
       },
+      initCount() {
+        axios({
+          url: `${apiPath}/user/${this.type === 'party' ? 'party' : 'group'}VoteNum`,
+          method: 'post'
+        }).then((res) => {
+          if (res.data.code === 'SUCCESS') {
+            this.count = res.data.data.countNum
+          } else {
+            this.count = 0
+            console.error("请求计票结果出错")
+          }
+        }).catch((err) => {
+          this.count = 0
+          console.error("请求计票结果出错")
+        })
+        // let cnt = parseInt(localStorage.getItem(`${this.type === 'party' ? 'party' : 'group'}_count`))
+        // this.count = cnt ? cnt : 0
+      },
       loadData() {
-        let order = this.switch1 ? '1' : '0'
+        let order = this.switchSort ? '1' : '0'
         this.getIdentity()
+        this.initCount()
         this.type = this.$route.params.type
         if (this.type === 'party') {
           this.title = '中国共产党上海大学第三届党委委员会委员'
@@ -232,7 +141,12 @@
         } else {
           this.title += '候选人'
         }
-        let URL = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Vote`
+        let URL = ''
+        if (this.switchPercentage) {
+          URL = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Percentage`
+        } else {
+          URL = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Vote`
+        }
         axios({
           url: URL,
           method: "POST",
@@ -242,7 +156,6 @@
         }).then((res) => {
           if (res.data.code === "SUCCESS") {
             this.items = res.data.data
-            this.$Message.success("本次计票成功！")
           } else {
             this.$Message.warning(`出错，提示：${res.data.message}`)
           }
@@ -287,6 +200,7 @@
           }
           votesObjArray.push(obj)
         }
+        this.spin = true
         axios({
           url: url,
           method: "post",
@@ -294,14 +208,19 @@
             "data": votesObjArray
           }
         }).then((res) => {
+          this.spin = false
           if (res.data.code === "SUCCESS") {
+            // localStorage.setItem(`${this.type === 'party' ? 'party' : 'group'}_count`, (this.count + 1).toString())
+            this.count++;
             this.loadData()
+            this.$Message.success("本次计票成功！")
           } else {
             this.$Message.warning(`出错，提示：${res.data.message}`)
           }
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         }).catch((err) => {
+          this.spin = false
           this.$Message.warning(`出错，提示：${err}`)
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
@@ -326,18 +245,23 @@
 </style>
 <style>
   .ivu-modal {
-    top: 300px;
+    top: 300px !important;
   }
 
   .ivu-modal-content > * {
-    border: none;
+    border: none !important;
   }
 
   .ivu-modal-body, .ivu-modal-header-inner {
-    text-align: center;
-    font-size: 1rem;
+    text-align: center !important;
+    font-size: 1rem !important;
   }
-  .ivu-checkbox-inner{
+
+  .ivu-checkbox-inner {
     transition: all 0.05s linear !important;
+  }
+
+  .ivu-spin-fix {
+    background: rgba(255, 255, 255, 0.5) !important;;
   }
 </style>

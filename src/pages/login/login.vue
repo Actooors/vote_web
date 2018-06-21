@@ -12,6 +12,7 @@
       </div>
       <input type="submit" class="submit" value="登  录" @click="handleOnClickLogin">
     </div>
+    <Spin size="large" fix v-if="spin"></Spin>
   </div>
 </template>
 
@@ -25,19 +26,28 @@
         loginForm: {
           username: '',
           password: ''
-        }
+        },
+        spin: false
+      }
+    },
+    mounted() {
+      if (this.$route.query.hasOwnProperty('redirect')) {
+        this.$Message.warning("请先登录!")
       }
     },
     methods: {
       handleOnClickLogin() {
+        this.spin = true
         axios({
           url: `${apiPath}/login`,
           method: 'post',
           data: {
             uid: this.loginForm.username,
             password: this.loginForm.password
-          }
+          },
+          timeout: 10000
         }).then((res) => {
+          this.spin = false
           if (res.data.code === "SUCCESS") {
             localStorage.setItem('token', res.data.data.token)
             localStorage.setItem('identity', res.data.data.identity)
@@ -50,6 +60,7 @@
             this.$Message.warning("请检查工号或密码是否正确")
           }
         }).catch((err) => {
+          this.spin = false
           this.$Message.warning(`发生错误：${err}`)
         })
       }

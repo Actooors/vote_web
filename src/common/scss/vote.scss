@@ -30,6 +30,12 @@ tr:not(.middle-tr) {
 
 td {
   font-size: 1rem;
+  border-left: 1.5px solid #E0EEFC;
+}
+
+td, td p {
+  text-align-last: center;
+  text-align: center;
 }
 
 tr, th, td {
@@ -52,14 +58,18 @@ tr, th, td {
     padding: 2rem;
     border-radius: .8rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, .1);
-    .switch-box {
+    .vote-vice-title {
       display: flex;
-      justify-content: flex-end;
-      margin: 1rem;
-      label {
+      justify-content: space-between;
+      .switch-box, .count {
+        display: flex;
+        justify-content: flex-end;
+        margin: 1rem;
         font-size: 1rem;
+
       }
     }
+
   }
   .submit-box {
     display: flex;
@@ -75,4 +85,18 @@ tr, th, td {
       margin: 0 1rem;
     }
   }
+}
+
+.demo-spin-icon-load{
+  animation: ani-demo-spin 1s linear infinite;
+}
+@keyframes ani-demo-spin {
+  from { transform: rotate(0deg);}
+  50%  { transform: rotate(180deg);}
+  to   { transform: rotate(360deg);}
+}
+.demo-spin-col{
+  height: 100px;
+  position: relative;
+  border: 1px solid #eee;
 }
