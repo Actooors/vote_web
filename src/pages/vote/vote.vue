@@ -23,7 +23,7 @@
           </div>
         </div>
 
-        <table cellspacing="0" cellpadding="0">
+        <table cellspacing="0" cellpadding="0" class="vote-table">
           <tbody>
           <tr>
             <th>{{switchSort?'排序':'编号'}}</th>
