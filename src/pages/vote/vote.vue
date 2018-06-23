@@ -40,7 +40,7 @@
           <tr v-if="!admin">
             <th>投票</th>
             <td v-for="(item,index) in items">
-              <Checkbox v-model="votes[index]" style="margin: 0;"></Checkbox>
+              <Checkbox v-model="votes[index]" style="margin: 0" size="large"></Checkbox>
             </td>
           </tr>
           <tr v-else>
