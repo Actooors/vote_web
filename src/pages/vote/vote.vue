@@ -15,7 +15,8 @@
             <div>
               <p>已计{{count}}票</p>
               <p v-if="admin || votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
-                                                                        :key="_.value">{{index+1}} </span></p>
+                                                                       :key="_.value" class="count-index-span">{{index+1}}</span>
+              </p>
               <p v-else>&nbsp;</p>
             </div>
           </div>
@@ -54,6 +55,9 @@
           <button @click="handleOnClickSubmit" class="submit">提 交</button>
           <button @click="handleOnClickReset" class="submit">重置</button>
         </div>
+        <div class="submit-box" v-else>
+          <button @click="handleOnClickRefresh" class="submit">刷新</button>
+        </div>
       </div>
     </div>
 
@@ -64,7 +68,7 @@
       @on-ok="handleOnClickConfirm">
       <p>共{{items.length}}人，您已选{{voteNum}}人。</p>
       <p v-if="votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
-                        :key="_.value">{{index+1}} </span></p>
+                                                      :key="_.value" class="count-index-span">{{index+1}}</span></p>
       <p>确定吗？</p>
     </Modal>
 
@@ -107,14 +111,14 @@
     created() {
       this.loadData()
       let that = this
-      //管理员界面10秒一刷新
-      if (this.admin) {
-        this.interval = setInterval(() => {
-          // that.loadData() //使用这个会莫名其妙一下请求好几次，我猜是axios异步的问题，懒得改了
-          location.reload()
-          console.log('interval刷新')
-        }, 10000)
-      }
+      // //管理员界面10秒一刷新
+      // if (this.admin) {
+      //   this.interval = setInterval(() => {
+      //     // that.loadData() //使用这个会莫名其妙一下请求好几次，我猜是axios异步的问题，懒得改了
+      //     location.reload()
+      //     console.log('interval刷新')
+      //   }, 10000)
+      // }
     },
     watch: {
       '$route'() {
@@ -195,6 +199,7 @@
         } else {
           URL = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}Vote`
         }
+        this.spin = true
         axios({
           url: URL,
           method: "POST",
@@ -202,6 +207,7 @@
             "order": order
           }
         }).then((res) => {
+          this.spin = false
           if (res.data.code === "SUCCESS") {
             this.items = res.data.data
           } else {
@@ -211,6 +217,7 @@
           this.handleOnClickReset()
           gotData()
         }).catch((err) => {
+          this.spin = false
           this.$Message.warning(`出错，提示：${err}`)
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
@@ -277,6 +284,9 @@
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         })
+      },
+      handleOnClickRefresh() {
+        this.loadData()
       }
     },
     computed: {

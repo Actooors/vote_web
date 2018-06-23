@@ -59,6 +59,14 @@ tr, th, td {
   }
 }
 
+.count-index-span{
+  font-size:.9em;
+  &:not(:first-of-type):before {
+    content:"，";
+    font-size:.8em;
+  }
+}
+
 .wrapper {
   display: flex;
   justify-content: center;
