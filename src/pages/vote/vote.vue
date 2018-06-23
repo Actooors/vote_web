@@ -12,7 +12,12 @@
         <h1 class="vote-title">{{title}}</h1>
         <div class="vote-vice-title">
           <div class="count">
-            已计票{{count}}人
+            <div>
+              <p>已计{{count}}票</p>
+              <p v-if="admin || votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
+                                                                        :key="_.value">{{index+1}} </span></p>
+              <p v-else>&nbsp;</p>
+            </div>
           </div>
           <div class="switch-box" v-if="admin">
             <label for="switch2">显示百分比</label>
@@ -23,37 +28,9 @@
           </div>
         </div>
 
-        <!--<table cellspacing="0" cellpadding="0" class="vote-table">-->
-        <!--<tbody>-->
-        <!--<tr>-->
-        <!--<th>{{switchSort?'排序':'编号'}}</th>-->
-        <!--<td v-for="(_,index) in items">{{index+1}}</td>-->
-        <!--</tr>-->
-        <!--<tr class="middle-tr">-->
-        <!--<th>候选人</th>-->
-        <!--<td v-for="item in items" class="middle-td">-->
-        <!--<p>{{item.name[0]}}</p>-->
-        <!--<p>{{item.name[2]?item.name[1]:'　'}}</p>-->
-        <!--<p>{{item.name[2]?item.name[2]:item.name[1]}}</p>-->
-        <!--</td>-->
-        <!--</tr>-->
-        <!--<tr v-if="!admin">-->
-        <!--<th>投票</th>-->
-        <!--<td v-for="(item,index) in items">-->
-        <!--<Checkbox v-model="votes[index]" style="margin: 0" size="large"></Checkbox>-->
-        <!--</td>-->
-        <!--</tr>-->
-        <!--<tr v-else>-->
-        <!--<th>{{this.switchPercentage?'%':'票数'}}</th>-->
-        <!--<td v-for="(item,index) in items" :class="{'percentage-td':percentageStyle}">-->
-        <!--{{item.num}}-->
-        <!--</td>-->
-        <!--</tr>-->
-        <!--</tbody>-->
-        <!--</table>-->
         <div class="table-box">
           <table cellspacing="0" cellpadding="0" class="vote-table">
-            <tr class="headers" >
+            <tr class="headers">
               <th class="blue blue-right first-row">{{switchSort?'排序':'编号'}}</th>
               <th class="blue-right">候选人</th>
               <th v-if="!admin">{{'投票'}}</th>
@@ -64,7 +41,7 @@
               <td class="blue blue-right first-row">{{index+1}}</td>
               <td class="name blue-right">{{item.name}}</td>
               <td v-if="!admin">
-                <check-icon :value.sync="votes[index]"></check-icon>
+                <check-icon :value.sync="votes[index]" class="checkicon"></check-icon>
               </td>
               <td v-else>
                 {{item.num}}
@@ -85,7 +62,10 @@
       v-model="modal"
       :mask-closable="false"
       @on-ok="handleOnClickConfirm">
-      <p>共{{items.length}}人，您已选{{voteNum}}人，确定吗？</p>
+      <p>共{{items.length}}人，您已选{{voteNum}}人。</p>
+      <p v-if="votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
+                        :key="_.value">{{index+1}} </span></p>
+      <p>确定吗？</p>
     </Modal>
 
     <Spin size="large" fix v-if="spin"></Spin>
@@ -335,5 +315,9 @@
 
   .ivu-spin-fix {
     background: rgba(255, 255, 255, 0.5) !important;;
+  }
+
+  .checkicon .weui-icon {
+    font-size: 30px !important;
   }
 </style>
