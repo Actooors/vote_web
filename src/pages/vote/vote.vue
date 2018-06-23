@@ -44,7 +44,7 @@
             </td>
           </tr>
           <tr v-else>
-            <th>{{this.switchPercentage?'百分比(%)':'票数'}}</th>
+            <th>{{this.switchPercentage?'%':'票数'}}</th>
             <td v-for="(item,index) in items" :class="{'percentage-td':percentageStyle}">
               {{item.num}}
             </td>
