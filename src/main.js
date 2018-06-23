@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Fastclick from 'fastclick'
+// import Fastclick from 'fastclick'
 import 'normalize.css'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
@@ -14,7 +14,8 @@ Vue.use(iView)
 
 Vue.config.productionTip = false
 
-Fastclick.attach(document.body)
+const FastClick = require('fastclick')
+FastClick.attach(document.body)
 
 /* eslint-disable no-new */
 new Vue({

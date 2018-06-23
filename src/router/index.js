@@ -45,7 +45,7 @@ var router = new Router({
 router.beforeEach((to, from, next) => {
   // console.log(to)
 
-  let bypassAuthWhileDev = false        //绕过登录设为true，否则为false
+  let bypassAuthWhileDev = true        //绕过登录设为true，否则为false
   if (!(bypassAuthWhileDev && process.env.NODE_ENV === 'development')) {
     //验证是否需要登录
     let token = window.localStorage.getItem('token')

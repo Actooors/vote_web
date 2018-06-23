@@ -2,45 +2,52 @@
   height: 100%;
 }
 
-tr th {
+.blue {
   background: #E0EEFC;
+}
+
+.blue-right {
+  border-right: 1.5px solid #E0EEFC;
+}
+
+.first-row {
+  padding: .3rem 1rem;
+}
+
+tr th {
+  //background: #E0EEFC;
   font-size: 1rem;
   line-height: 1.2em;
+  border-bottom: 1.5px solid #E0EEFC;
 }
 
 table {
   border: 1.5px solid #E0EEFC;
+  .headers {
+    height: 3rem;
+  }
 }
 
-tr:not(.middle-tr) {
-  height: 3.5rem;
-}
-
-.middle-tr {
-  height: 8rem;
-}
-
-.middle-td {
-  font-size: .9rem;
-  border-top: 1.5px solid #E0EEFC;
-  border-bottom: 1.5px solid #E0EEFC;
-  text-align: justify;
+.name {
+  //width: 8em;
+  //margin:auto;
   text-align-last: justify;
+  text-align: justify;
+
+}
+
+tr {
+  height: 1rem;
 }
 
 td {
   font-size: 1rem;
-  border-left: 1.5px solid #E0EEFC;
-}
-
-td, td p {
-  text-align-last: center;
-  text-align: center;
+  border-bottom: 1.5px solid #E0EEFC;
 }
 
 tr, th, td {
-  width: 1em;
-  padding: .3rem .2rem;
+  //width:6em;
+  padding: .3rem 6rem;
   line-height: 1.2em;
 }
 
@@ -59,7 +66,7 @@ tr, th, td {
   .vote-title {
     font-size: 1.6rem;
     text-align: center;
-    margin-bottom: 1.6rem;
+    //margin-bottom: 1.6rem;
   }
   .vote-box {
     background: white;
@@ -76,8 +83,13 @@ tr, th, td {
         font-size: 1rem;
       }
     }
-    .vote-table {
-      width: 100%;
+    .table-box {
+      max-height: 300px;
+      overflow: scroll;
+      text-align: center;
+      .vote-table {
+        width: 100%;
+      }
     }
 
   }

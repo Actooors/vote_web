@@ -9,7 +9,7 @@
       <!--<router-link :to="{name:'logout'}">注销</router-link>-->
       <!--</div>-->
       <div class="vote-box">
-        <h1 class="vote-title">{{this.title}}</h1>
+        <h1 class="vote-title">{{title}}</h1>
         <div class="vote-vice-title">
           <div class="count">
             已计票{{count}}人
@@ -23,34 +23,56 @@
           </div>
         </div>
 
-        <table cellspacing="0" cellpadding="0" class="vote-table">
-          <tbody>
-          <tr>
-            <th>{{switchSort?'排序':'编号'}}</th>
-            <td v-for="(_,index) in items">{{index+1}}</td>
-          </tr>
-          <tr class="middle-tr">
-            <th>候选人</th>
-            <td v-for="item in items" class="middle-td">
-              <p>{{item.name[0]}}</p>
-              <p>{{item.name[2]?item.name[1]:'　'}}</p>
-              <p>{{item.name[2]?item.name[2]:item.name[1]}}</p>
-            </td>
-          </tr>
-          <tr v-if="!admin">
-            <th>投票</th>
-            <td v-for="(item,index) in items">
-              <Checkbox v-model="votes[index]" style="margin: 0" size="large"></Checkbox>
-            </td>
-          </tr>
-          <tr v-else>
-            <th>{{this.switchPercentage?'%':'票数'}}</th>
-            <td v-for="(item,index) in items" :class="{'percentage-td':percentageStyle}">
-              {{item.num}}
-            </td>
-          </tr>
-          </tbody>
-        </table>
+        <!--<table cellspacing="0" cellpadding="0" class="vote-table">-->
+        <!--<tbody>-->
+        <!--<tr>-->
+        <!--<th>{{switchSort?'排序':'编号'}}</th>-->
+        <!--<td v-for="(_,index) in items">{{index+1}}</td>-->
+        <!--</tr>-->
+        <!--<tr class="middle-tr">-->
+        <!--<th>候选人</th>-->
+        <!--<td v-for="item in items" class="middle-td">-->
+        <!--<p>{{item.name[0]}}</p>-->
+        <!--<p>{{item.name[2]?item.name[1]:'　'}}</p>-->
+        <!--<p>{{item.name[2]?item.name[2]:item.name[1]}}</p>-->
+        <!--</td>-->
+        <!--</tr>-->
+        <!--<tr v-if="!admin">-->
+        <!--<th>投票</th>-->
+        <!--<td v-for="(item,index) in items">-->
+        <!--<Checkbox v-model="votes[index]" style="margin: 0" size="large"></Checkbox>-->
+        <!--</td>-->
+        <!--</tr>-->
+        <!--<tr v-else>-->
+        <!--<th>{{this.switchPercentage?'%':'票数'}}</th>-->
+        <!--<td v-for="(item,index) in items" :class="{'percentage-td':percentageStyle}">-->
+        <!--{{item.num}}-->
+        <!--</td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+        <!--</table>-->
+        <div class="table-box">
+          <table cellspacing="0" cellpadding="0" class="vote-table">
+            <tr class="headers" >
+              <th class="blue blue-right first-row">{{switchSort?'排序':'编号'}}</th>
+              <th class="blue-right">候选人</th>
+              <th v-if="!admin">{{'投票'}}</th>
+              <th v-else>{{switchPercentage?'得票率':'得票数'}}</th>
+              <!--<check-icon>投票</check-icon>-->
+            </tr>
+            <tr v-for="(item,index) in items">
+              <td class="blue blue-right first-row">{{index+1}}</td>
+              <td class="name blue-right">{{item.name}}</td>
+              <td v-if="!admin">
+                <check-icon :value.sync="votes[index]"></check-icon>
+              </td>
+              <td v-else>
+                {{item.num}}
+              </td>
+            </tr>
+          </table>
+        </div>
+
         <div class="submit-box" v-if="!admin">
           <button @click="handleOnClickSubmit" class="submit">提 交</button>
           <button @click="handleOnClickReset" class="submit">重置</button>
@@ -72,9 +94,15 @@
 
 <script>
   import axios from 'axios'
+  import {CheckIcon} from 'vux'
+  // import Scroll from 'components/scroll/scroll'
 
   export default {
     name: "vote",
+    components: {
+      CheckIcon,
+      // Scroll
+    },
     data() {
       return {
         items: [],
