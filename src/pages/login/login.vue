@@ -32,7 +32,7 @@
     },
     mounted() {
       if (this.$route.query.hasOwnProperty('redirect')) {
-        this.$Message.warning("请先登录!")
+        this.$Notice.warning({title:"请先登录!"})
       }
     },
     methods: {
@@ -51,17 +51,20 @@
           if (res.data.code === "SUCCESS") {
             localStorage.setItem('token', res.data.data.token)
             localStorage.setItem('identity', res.data.data.identity)
+            console.log(res.data.data)
+            localStorage.setItem('partyMaxVoteNum', res.data.data.voteMaxNum.partMaxVoteNum)
+            localStorage.setItem('groupMaxVoteNum', res.data.data.voteMaxNum.groupMaxVoteNum)
             //是否有重定向参数
             if (this.$route.query.hasOwnProperty('redirect'))
               this.$router.push({path: this.$route.query.redirect})
             else
               this.$router.push({name: "selectBranch"})
           } else {
-            this.$Message.warning("请检查工号或密码是否正确")
+            this.$Notice.warning({title:"请检查工号或密码是否正确"})
           }
         }).catch((err) => {
           this.spin = false
-          this.$Message.warning(`发生错误：${err}`)
+          this.$Notice.warning({title:`发生错误：${err}`})
         })
       }
     }

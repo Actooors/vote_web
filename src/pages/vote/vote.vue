@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrapper">
-    <div class="wrapper">
+    <div class="wrapper" ref="wrapper">
       <Button type="error" style="position: fixed; right:5%; top:5%; font-size: .8rem;"
               @click="$router.push('/logout')">注销
       </Button>
@@ -8,14 +8,16 @@
       <!--<router-link :to="{name:'selectBranch'}">重新选择</router-link>-->
       <!--<router-link :to="{name:'logout'}">注销</router-link>-->
       <!--</div>-->
-      <div class="vote-box">
+      <div class="vote-box" ref="votebox">
         <h1 class="vote-title">{{title}}</h1>
         <div class="vote-vice-title">
           <div class="count">
             <div>
               <p>已计{{count}}票</p>
-              <p v-if="admin || votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
-                                                                       :key="_.value" class="count-index-span">{{index+1}}</span>
+              <p>每张选票至多选{{maxVoteNum}}人，您已选{{voteNum}}人</p>
+              <p v-if="admin || votes.length-voteNum>0">本张选票未选姓名及序号：<span v-for="(_,index) in votes"
+                                                                          v-if="!votes[index]"
+                                                                          :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
               </p>
               <p v-else>&nbsp;</p>
             </div>
@@ -29,22 +31,23 @@
           </div>
         </div>
 
-        <div class="table-box">
+        <div class="table-box" ref="tablebox">
           <table cellspacing="0" cellpadding="0" class="vote-table">
             <tr class="headers">
-              <th class="blue blue-right first-row">{{switchSort?'排序':'编号'}}</th>
+              <th class="blue-right first-row">{{switchSort?'排序':'编号'}}</th>
               <th class="blue-right">候选人</th>
               <th v-if="!admin">{{'投票'}}</th>
               <th v-else>{{switchPercentage?'得票率':'得票数'}}</th>
               <!--<check-icon>投票</check-icon>-->
             </tr>
             <tr v-for="(item,index) in items">
-              <td class="blue blue-right first-row">{{index+1}}</td>
-              <td class="name blue-right">{{item.name}}</td>
-              <td v-if="!admin">
+              <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">{{index+1}}
+              </td>
+              <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">{{item.name}}</td>
+              <td :class="{'blue':true,'deep-background':index%2===0}" v-if="!admin">
                 <check-icon :value.sync="votes[index]" class="checkicon"></check-icon>
               </td>
-              <td v-else>
+              <td :class="{'blue':true,'deep-background':index%2===0}" v-else>
                 {{item.num}}
               </td>
             </tr>
@@ -68,8 +71,9 @@
       @on-ok="handleOnClickConfirm">
       <p>共{{items.length}}人，您已选{{voteNum}}人。</p>
       <p v-if="votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
-                                                      :key="_.value" class="count-index-span">{{index+1}}</span></p>
-      <p>确定吗？</p>
+                                                      :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
+      </p>
+      <p style="margin-top:.5rem">确定吗？</p>
     </Modal>
 
     <Spin size="large" fix v-if="spin"></Spin>
@@ -100,7 +104,8 @@
         count: 0,
         spin: false,
         interval: null,
-        percentageStyle: false
+        percentageStyle: false,
+        maxVoteNum: 0
       }
     },
     beforeRouteLeave(from, to, next) {
@@ -108,7 +113,7 @@
       clearInterval(this.interval)
       next()
     },
-    created() {
+    mounted() {
       this.loadData()
       let that = this
       // //管理员界面10秒一刷新
@@ -119,6 +124,14 @@
       //     console.log('interval刷新')
       //   }, 10000)
       // }
+      this.justHeight()
+      let timer = null
+      window.onresize = function () {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          that.justHeight()
+        }, 50)
+      }
     },
     watch: {
       '$route'() {
@@ -185,8 +198,10 @@
         this.initCount()
         if (this.type === 'party') {
           this.title = '中国共产党上海大学第三届党委委员会委员'
+          this.maxVoteNum = localStorage.getItem('partyMaxVoteNum')
         } else {
           this.title = '中国共产党上海大学第三届纪委委员会委员'
+          this.maxVoteNum = localStorage.getItem('groupMaxVoteNum')
         }
         if (this.admin) {
           this.title += '计票结果'
@@ -211,14 +226,14 @@
           if (res.data.code === "SUCCESS") {
             this.items = res.data.data
           } else {
-            this.$Message.warning(`出错，提示：${res.data.message}`)
+            this.$Notice.warning({title: `出错，提示：${res.data.message}`})
           }
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
           gotData()
         }).catch((err) => {
           this.spin = false
-          this.$Message.warning(`出错，提示：${err}`)
+          this.$Notice.warning({title: `出错，提示：${err}`})
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
           gotData()
@@ -230,6 +245,10 @@
         this.loadData()
       },
       handleOnClickSubmit() {
+        if (this.voteNum > this.maxVoteNum) {
+          this.$Notice.warning({title: "每张选票至多选" + this.maxVoteNum + "人！"})
+          return
+        }
         this.modal = true
       },
       handleOnClickReset() {
@@ -255,7 +274,7 @@
         for (let i = 0; i < this.items.length; i++) {
           let obj = {
             "voted": this.votes[i],
-            "name": this.items[i].name
+            "name": encodeURI(this.items[i].name)
           }
           votesObjArray.push(obj)
         }
@@ -272,21 +291,30 @@
             // localStorage.setItem(`${this.type === 'party' ? 'party' : 'group'}_count`, (this.count + 1).toString())
             this.count++;
             this.loadData()
-            this.$Message.success("本次计票成功！")
+            this.$Notice.success({title: "本次计票成功！"})
           } else {
-            this.$Message.warning(`出错，提示：${res.data.message}`)
+            this.$Notice.warning({title: `出错，提示：${res.data.message}`})
           }
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         }).catch((err) => {
           this.spin = false
-          this.$Message.warning(`出错，提示：${err}`)
+          this.$Notice.warning({title: `出错，提示：${err}`})
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         })
       },
       handleOnClickRefresh() {
         this.loadData()
+      },
+      justHeight() {
+        // console.log(this.$refs.votebox)
+        let headbarHeight = 130 / 1024 * innerHeight
+        // let voteboxHeight = window.innerHeight - headbarHeight
+        this.$refs.votebox.style.top = `${headbarHeight}px`
+        // this.$refs.votebox.style.height = `${voteboxHeight}px`
+        // let tableboxHeight = voteboxHeight - 300
+        // this.$refs.tablebox.style.height = `${tableboxHeight}px`
       }
     },
     computed: {
@@ -306,6 +334,10 @@
   @import '../../common/scss/vote';
 </style>
 <style>
+  /*html {*/
+  /*overflow: hidden;*/
+  /*}*/
+
   .ivu-modal {
     top: 300px !important;
   }
