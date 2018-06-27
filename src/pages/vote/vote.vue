@@ -9,58 +9,66 @@
       <!--<router-link :to="{name:'logout'}">注销</router-link>-->
       <!--</div>-->
       <div class="vote-box" ref="votebox">
-        <h1 class="vote-title">{{title}}</h1>
-        <div class="vote-vice-title">
-          <div class="count">
-            <div>
-              <p>已计{{count}}票</p>
-              <p>每张选票至多选{{maxVoteNum}}人，您已选{{voteNum}}人</p>
-              <p v-if="admin || votes.length-voteNum>0">本张选票未选姓名及序号：<span v-for="(_,index) in votes"
-                                                                          v-if="!votes[index]"
-                                                                          :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
-              </p>
-              <p v-else>&nbsp;</p>
+        <div ref="voteheader">
+          <h1 class="vote-title">{{title}}</h1>
+          <div class="vote-vice-title">
+            <div class="count">
+              <div>
+                <p>已计{{count}}票</p>
+                <p>每张选票至多选{{maxVoteNum}}人，您已选{{voteNum}}人</p>
+                <p v-if="admin || votes.length-voteNum>0">本张选票未选姓名及序号：<span v-for="(_,index) in votes"
+                                                                            v-if="!votes[index]"
+                                                                            :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
+                </p>
+                <p v-else>&nbsp;</p>
+              </div>
+            </div>
+            <div class="switch-box" v-if="admin">
+              <label for="switch2">显示百分比</label>
+              <i-switch v-model="switchPercentage" @on-change="handleOnSwitch" id="switch2"></i-switch>
+              <span>&nbsp;&nbsp;&nbsp;</span>
+              <label for="switch1">按票数排序</label>
+              <i-switch v-model="switchSort" @on-change="handleOnSwitch" id="switch1"></i-switch>
             </div>
           </div>
-          <div class="switch-box" v-if="admin">
-            <label for="switch2">显示百分比</label>
-            <i-switch v-model="switchPercentage" @on-change="handleOnSwitch" id="switch2"></i-switch>
-            <span>&nbsp;&nbsp;&nbsp;</span>
-            <label for="switch1">按票数排序</label>
-            <i-switch v-model="switchSort" @on-change="handleOnSwitch" id="switch1"></i-switch>
+        </div>
+
+        <div style="width:100%;" ref="tablebtnbox">
+          <div class="table-box" ref="tablebox">
+            <table cellspacing="0" cellpadding="0" class="vote-table">
+              <tr class="headers">
+                <th class="blue-right first-row">{{switchSort?'排序':'编号'}}</th>
+                <th class="blue-right">候选人</th>
+                <th v-if="!admin">{{'投票'}}</th>
+                <th v-else>{{switchPercentage?'得票率':'得票数'}}</th>
+                <!--<check-icon>投票</check-icon>-->
+              </tr>
+              <tr v-for="(item,index) in items">
+                <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">{{index+1}}
+                </td>
+                <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">{{item.name}}
+                </td>
+                <td :class="{'blue':true,'deep-background':index%2===0}" v-if="!admin">
+                  <check-icon :value.sync="votes[index]" class="checkicon"></check-icon>
+                </td>
+                <td :class="{'blue':true,'deep-background':index%2===0}" v-else>
+                  {{item.num}}
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div ref="submitbtnbox">
+            <div class="submit-box" v-if="!admin">
+              <button @click="handleOnClickSubmit" class="submit">提 交</button>
+              <button @click="handleOnClickReset" class="submit">重置</button>
+            </div>
+            <div class="submit-box" v-else>
+              <button @click="handleOnClickRefresh" class="submit">刷新</button>
+            </div>
           </div>
         </div>
 
-        <div class="table-box" ref="tablebox">
-          <table cellspacing="0" cellpadding="0" class="vote-table">
-            <tr class="headers">
-              <th class="blue-right first-row">{{switchSort?'排序':'编号'}}</th>
-              <th class="blue-right">候选人</th>
-              <th v-if="!admin">{{'投票'}}</th>
-              <th v-else>{{switchPercentage?'得票率':'得票数'}}</th>
-              <!--<check-icon>投票</check-icon>-->
-            </tr>
-            <tr v-for="(item,index) in items">
-              <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">{{index+1}}
-              </td>
-              <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">{{item.name}}</td>
-              <td :class="{'blue':true,'deep-background':index%2===0}" v-if="!admin">
-                <check-icon :value.sync="votes[index]" class="checkicon"></check-icon>
-              </td>
-              <td :class="{'blue':true,'deep-background':index%2===0}" v-else>
-                {{item.num}}
-              </td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="submit-box" v-if="!admin">
-          <button @click="handleOnClickSubmit" class="submit">提 交</button>
-          <button @click="handleOnClickReset" class="submit">重置</button>
-        </div>
-        <div class="submit-box" v-else>
-          <button @click="handleOnClickRefresh" class="submit">刷新</button>
-        </div>
       </div>
     </div>
 
@@ -105,7 +113,10 @@
         spin: false,
         interval: null,
         percentageStyle: false,
-        maxVoteNum: 0
+        maxVoteNum: 0,
+        voteHeadBarHeight: 0,
+        voteHeadBarWidth: 0,
+        voteHeadBarTop: 0
       }
     },
     beforeRouteLeave(from, to, next) {
@@ -131,6 +142,36 @@
         timer = setTimeout(() => {
           that.justHeight()
         }, 50)
+      }
+      document.body.onscroll = function (e) {
+        //固定head
+        let scrollTop = document.body.scrollTop + document.documentElement.scrollTop
+        if (scrollTop >= that.$refs.votebox.offsetTop) {
+          if (!that.voteHeadBarHeight) {
+            that.voteHeadBarHeight = that.$refs.voteheader.offsetHeight
+            that.voteHeadBarWidth = that.$refs.voteheader.offsetWidth
+            that.voteHeadBarTopPx = window.getComputedStyle(that.$refs.votebox, null)["padding-top"]
+            that.$refs.tablebox.style.top = that.voteHeadBarHeight + 'px'
+            that.$refs.submitbtnbox.style.top = that.voteHeadBarHeight + 'px'
+            that.$refs.tablebtnbox.style.height = that.$refs.tablebtnbox.offsetHeight + that.voteHeadBarHeight + 'px'
+            that.$refs.voteheader.style.width = that.voteHeadBarWidth + 'px'
+            that.$refs.voteheader.style["z-index"] = 100
+            that.$refs.voteheader.style.background = "white"
+            that.$refs.voteheader.style.top = "0"
+          }
+          that.$refs.tablebox.style.position = 'relative'
+          that.$refs.submitbtnbox.style.position = 'relative'
+          that.$refs.voteheader.style.position = 'fixed'
+          that.$refs.voteheader.style.background = 'white'
+          that.$refs.voteheader.style["padding-top"] = that.voteHeadBarTopPx
+
+        } else {
+          that.$refs.tablebox.style.position = 'static'
+          that.$refs.submitbtnbox.style.position = 'static'
+          that.$refs.tablebox.style.top = that.voteHeadBarHeight + 'px'
+          that.$refs.voteheader.style.position = 'static'
+          that.$refs.voteheader.style["padding-top"] = "0"
+        }
       }
     },
     watch: {
