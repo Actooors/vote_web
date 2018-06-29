@@ -15,10 +15,15 @@
             <div class="count">
               <div>
                 <p>已计{{count}}票</p>
-                <p>每张选票至多选{{maxVoteNum}}人，您已选{{voteNum}}人</p>
-                <p v-if="admin || votes.length-voteNum>0">本张选票未选姓名及序号：<span v-for="(_,index) in votes"
-                                                                            v-if="!votes[index]"
-                                                                            :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
+                <p>每张选票至多赞成{{maxVoteNum}}人，您已赞成{{voteNum}}人</p>
+                <p v-if="admin || voteNum1>0">本张选票不赞成姓名及序号：<span v-for="(_,index) in votes"
+                                                                 v-if="votes[index]==='1'"
+                                                                 :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
+                </p>
+                <p v-else>&nbsp;</p>
+                <p v-if="admin || voteNum2>0">本张选票弃权姓名及序号：<span v-for="(_,index) in votes"
+                                                                v-if="votes[index]==='2'"
+                                                                :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
                 </p>
                 <p v-else>&nbsp;</p>
               </div>
@@ -39,17 +44,38 @@
               <tr class="headers">
                 <th class="blue-right first-row">{{switchSort?'排序':'编号'}}</th>
                 <th class="blue-right">候选人</th>
-                <th v-if="!admin">{{'投票'}}</th>
-                <th v-else>{{switchPercentage?'得票率':'得票数'}}</th>
-                <!--<check-icon>投票</check-icon>-->
+                <th v-if="!admin" class="blue-right">赞成</th>
+                <th v-else class="blue-right">{{switchPercentage?'赞成票率':'赞成票数'}}</th>
+                <th v-if="!admin" class="blue-right">不赞成</th>
+                <th v-else class="blue-right">不赞成票数</th>
+                <th v-if="!admin">弃权</th>
+                <th v-else>弃权票数</th>
               </tr>
               <tr v-for="(item,index) in items">
                 <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">{{index+1}}
                 </td>
                 <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">{{item.name}}
                 </td>
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-if="!admin">
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="0">
+                  <!--<Radio v-model="votes[index][0]"-->
+                  <!--@on-change="handleClickRadio"></Radio>-->
+                </td>
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-else>
+                  {{item.num}}
+                </td>
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-if="!admin">
+                  <!--<Radio v-model="votes[index][1]" class="checkicon"-->
+                  <!--@on-change="handleClickRadio"></Radio>-->
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="1">
+                </td>
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-else>
+                  {{item.num}}
+                </td>
                 <td :class="{'blue':true,'deep-background':index%2===0}" v-if="!admin">
-                  <check-icon :value.sync="votes[index]" class="checkicon"></check-icon>
+                  <!--<Radio v-model="votes[index][2]" class="checkicon"-->
+                  <!--@on-change="handleClickRadio"></Radio>-->
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="2">
                 </td>
                 <td :class="{'blue':true,'deep-background':index%2===0}" v-else>
                   {{item.num}}
@@ -77,8 +103,13 @@
       v-model="modal"
       :mask-closable="false"
       @on-ok="handleOnClickConfirm">
-      <p>共{{items.length}}人，您已选{{voteNum}}人。</p>
-      <p v-if="votes.length-voteNum>0">本张选票未选序号：<span v-for="(_,index) in votes" v-if="!votes[index]"
+      <p>共{{items.length}}人，您已赞成{{voteNum}}人。</p>
+      <p v-if="admin || voteNum1>0">本张选票不赞成姓名及序号：<span v-for="(_,index) in votes"
+                                                       v-if="votes[index]==='1'"
+                                                       :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
+      </p>
+      <p v-if="admin || voteNum2>0">本张选票弃权姓名及序号：<span v-for="(_,index) in votes"
+                                                      v-if="votes[index]==='2'"
                                                       :key="_.value" class="count-index-span">{{items[index].name}}({{index+1}})</span>
       </p>
       <p style="margin-top:.5rem">确定吗？</p>
@@ -270,12 +301,18 @@
             this.$Notice.warning({title: `出错，提示：${res.data.message}`})
           }
           this.votes = new Array(this.items.length)
+          for (let i = 0; i < this.votes.length; i++) {
+            this.votes[i] = new Array(3)
+          }
           this.handleOnClickReset()
           gotData()
         }).catch((err) => {
           this.spin = false
           this.$Notice.warning({title: `出错，提示：${err}`})
           this.votes = new Array(this.items.length)
+          for (let i = 0; i < this.votes.length; i++) {
+            this.votes[i] = new Array(3)
+          }
           this.handleOnClickReset()
           gotData()
         })
@@ -294,7 +331,7 @@
       },
       handleOnClickReset() {
         for (let i = 0; i < this.votes.length; i++) {
-          this.$set(this.votes, i, true)
+          this.$set(this.votes, i, "0")
         }
       },
       handleOnClickConfirm() {
@@ -362,7 +399,23 @@
       voteNum() {
         let num = 0;
         for (let i = 0; i < this.votes.length; i++) {
-          if (this.votes[i])
+          if (this.votes[i] === "0")
+            num++;
+        }
+        return num;
+      },
+      voteNum1() {
+        let num = 0;
+        for (let i = 0; i < this.votes.length; i++) {
+          if (this.votes[i] === "1")
+            num++;
+        }
+        return num;
+      },
+      voteNum2() {
+        let num = 0;
+        for (let i = 0; i < this.votes.length; i++) {
+          if (this.votes[i] === "2")
             num++;
         }
         return num;

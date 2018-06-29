@@ -43,11 +43,20 @@ tr {
 td {
   font-size: 1rem;
   border-bottom: 1.5px solid #E0EEFC;
+  .radios {
+    height: 20px;
+    width: 20px;
+    margin: 5px;
+  }
+}
+
+.count p {
+  font-size: 12px;
 }
 
 tr, th, td {
   //width:6em;
-  padding: .3rem 18%;
+  padding: .3rem 8%;
 
   line-height: 1.2em;
 }
