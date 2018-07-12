@@ -41,13 +41,26 @@ tr {
 }
 
 td {
-  font-size: 1rem;
+  font-size: 1.2rem;
   border-bottom: 1.5px solid #E0EEFC;
+  .radios {
+    height: 30px;
+    width: 30px;
+    margin: 5px;
+  }
+}
+
+.count {
+  margin: .5rem 0 .5rem 1rem;
+}
+
+.count p {
+  font-size: 16px;
 }
 
 tr, th, td {
   //width:6em;
-  padding: .3rem 18%;
+  padding: .3rem 8%;
 
   line-height: 1.2em;
 }
@@ -91,7 +104,6 @@ tr, th, td {
       .switch-box, .count {
         display: flex;
         justify-content: flex-end;
-        margin: 1rem;
         font-size: 1rem;
       }
     }
