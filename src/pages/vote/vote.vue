@@ -274,7 +274,7 @@
           this.title = '中国共产党上海大学第三届党委委员会委员'
           this.maxVoteNum = localStorage.getItem('partyMaxVoteNum')
         } else {
-          this.title = '中国共产党上海大学第三届纪委委员会委员'
+          this.title = '中国共产党上海大学机关委员会委员'
           this.maxVoteNum = localStorage.getItem('groupMaxVoteNum')
         }
         if (this.admin) {
