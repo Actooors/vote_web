@@ -29,11 +29,13 @@
               </div>
             </div>
             <div class="switch-box" v-if="admin">
-              <label for="switch2">显示百分比</label>
-              <i-switch v-model="switchPercentage" @on-change="handleOnSwitch" id="switch2"></i-switch>
+              <label>显示百分比
+                <i-switch v-model="switchPercentage" @on-change="handleOnSwitch"></i-switch>
+              </label>
               <span>&nbsp;&nbsp;&nbsp;</span>
-              <label for="switch1">按票数排序</label>
-              <i-switch v-model="switchSort" @on-change="handleOnSwitch" id="switch1"></i-switch>
+              <label>按票数排序
+                <i-switch v-model="switchSort" @on-change="handleOnSwitch"></i-switch>
+              </label>
             </div>
           </div>
         </div>
