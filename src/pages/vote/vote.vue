@@ -340,14 +340,18 @@
         //请求投票接口
         let url = `${apiPath}/vote/${this.type === 'party' ? 'party' : 'group'}PullVote`
         let votesObjArray = []
+        //0投票 1放弃 2弃权
         /*
         {
           "data":[{
-                    "voted":"true",
+                    "voted":0,
                     "name":"金东寒"
                  }, {
-                    "voted":"false",
+                    "voted":1,
                     "name":"殷子良"
+                 }, {
+                    "voted":2,
+                    "name":"郭孟然"
                  }]
         }
         */
