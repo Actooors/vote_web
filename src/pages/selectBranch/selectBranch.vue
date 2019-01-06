@@ -2,11 +2,12 @@
   <div class="wrapper">
     <Button type="error" style="position: fixed; right:5%; top:5%; font-size: .8rem;" @click="$router.push('/logout')">注销</Button>
     <div class="choice-box">
-      <!--<div class="choice" @click="handleOnClickChoice(0)">-->
-        <!--党委委员计票-->
-      <!--</div>-->
+      <!--TODO:这里改变选择页面-->
+      <div class="choice" @click="handleOnClickChoice(0)">
+        工会委员计票
+      </div>
       <div class="choice" @click="handleOnClickChoice(1)">
-        机关委员换届计票
+        经审委员计票
       </div>
     </div>
   </div>

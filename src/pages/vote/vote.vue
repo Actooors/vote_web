@@ -270,11 +270,12 @@
         this.getIdentity()
 
         this.initCount()
+        //TODO: 注意这里修改计票标题，以及计票结果标题
         if (this.type === 'party') {
-          this.title = '中国共产党上海大学第三届党委委员会委员'
+          this.title = '上海大学第五届教职工代表大会工会委员'
           this.maxVoteNum = localStorage.getItem('partyMaxVoteNum')
         } else {
-          this.title = '中国共产党上海大学机关委员会委员'
+          this.title = '上海大学第五届教职工代表大会经审委员'
           this.maxVoteNum = localStorage.getItem('groupMaxVoteNum')
         }
         if (this.admin) {
