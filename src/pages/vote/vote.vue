@@ -13,7 +13,7 @@
           <h1 class="vote-title">{{title}}</h1>
           <div class="vote-vice-title">
             <div class="count">
-              <div>
+              <div v-if="!admin">
                 <p>已计{{count}}票</p>
                 <p>每张选票至多赞成{{maxVoteNum}}人，您已赞成{{voteNum}}人</p>
                 <p v-if="admin || voteNum1>0">本张选票不赞成姓名及序号：<span v-for="(_,index) in votes"
@@ -54,33 +54,28 @@
                 <th v-else>弃权票数</th>
               </tr>
               <tr v-for="(item,index) in items">
-                <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">{{index+1}}
+                <td :class="{'blue':true,'blue-right':true,'first-row':true,'deep-background':index%2===0}">
+                  {{index+1}}
+                  <!--第一列是序号-->
                 </td>
-                <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">{{item.name}}
+                <td :class="{'blue':true,'name':true,'blue-right':true,'deep-background':index%2===0}">
+                  {{item.name}}
+                  <!--第二列是姓名-->
                 </td>
-                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-if="!admin">
-                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="0">
-                  <!--<Radio v-model="votes[index][0]"-->
-                  <!--@on-change="handleClickRadio"></Radio>-->
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}">
+                  <!--第三列是赞成（不是管理员的时候是个radio，是管理员的时候是个计票）-->
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="0" v-if="!admin">
+                  <span v-else>{{item.num}}</span>
                 </td>
-                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-else>
-                  {{item.num}}
+                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}">
+                  <!--第四列是不赞成（不是管理员的时候是个radio，是管理员的时候是个计票）-->
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="1" v-if="!admin">
+                  <span v-else>{{item.num1}}</span>
                 </td>
-                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-if="!admin">
-                  <!--<Radio v-model="votes[index][1]" class="checkicon"-->
-                  <!--@on-change="handleClickRadio"></Radio>-->
-                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="1">
-                </td>
-                <td :class="{'blue':true,'blue-right':true,'deep-background':index%2===0}" v-else>
-                  {{item.num}}
-                </td>
-                <td :class="{'blue':true,'deep-background':index%2===0}" v-if="!admin">
-                  <!--<Radio v-model="votes[index][2]" class="checkicon"-->
-                  <!--@on-change="handleClickRadio"></Radio>-->
-                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="2">
-                </td>
-                <td :class="{'blue':true,'deep-background':index%2===0}" v-else>
-                  {{item.num}}
+                <td :class="{'blue':true,'deep-background':index%2===0}">
+                  <!--第五列是弃权（不是管理员的时候是个radio，是管理员的时候是个计票）-->
+                  <input type="radio" :name="`r${index}`" class="radios" v-model="votes[index]" value="2" v-if="!admin">
+                  <span v-else>{{item.num2}}</span>
                 </td>
               </tr>
             </table>
@@ -303,6 +298,7 @@
           } else {
             this.$Notice.warning({title: `出错，提示：${res.data.message}`})
           }
+          //初始化一个votes数组，每个元素是一个长度为3的数组（赞成、不赞成、弃权）
           this.votes = new Array(this.items.length)
           for (let i = 0; i < this.votes.length; i++) {
             this.votes[i] = new Array(3)
