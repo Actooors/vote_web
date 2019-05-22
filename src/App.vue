@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1 :style="{top:`${30*heightScale}px`,left:`${150*widthScale}px`}" id="title">{{title}}</h1>
+    <h1 :style="{lineHeight:`${103*heightScale}px`,left:`${150*widthScale}px`}" id="title">{{title}}</h1>
     <router-view/>
   </div>
 </template>
@@ -21,7 +21,7 @@
         return document.body.clientWidth / 1280
       }
     },
-    mounted() {
+    created() {
       this.title = localStorage.getItem('title')
       if (!this.title) {
         this.$axios({
@@ -39,6 +39,7 @@
   body {
     background-image: url(/static/images/background_header.jpg);
     background-size: 100% 100%;
+    background-repeat: no-repeat;
   }
 
   html, body, #app {
@@ -47,6 +48,7 @@
 
   #title {
     position: absolute;
+    top: 0;
     color: white;
     font-family: 'HYShangWeiShouShuW';
     font-weight: normal;
@@ -56,6 +58,12 @@
   @media screen and (max-width: 500px) {
     #title {
       font-size: 20px;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    #title {
+      font-size: 45px;
     }
   }
 </style>

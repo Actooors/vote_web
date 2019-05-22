@@ -118,13 +118,13 @@
 
 <script>
   import axios from 'axios'
-  import {CheckIcon} from 'vux'
+  import { CheckIcon } from 'vux'
   // import Scroll from 'components/scroll/scroll'
 
   export default {
-    name: "vote",
+    name: 'vote',
     components: {
-      CheckIcon,
+      CheckIcon
       // Scroll
     },
     data() {
@@ -148,7 +148,7 @@
       }
     },
     beforeRouteLeave(from, to, next) {
-      console.log("clearInterval", this.interval)
+      console.log('clearInterval', this.interval)
       clearInterval(this.interval)
       next()
     },
@@ -165,40 +165,40 @@
       // }
       this.justHeight()
       let timer = null
-      window.onresize = function () {
+      window.onresize = function() {
         clearTimeout(timer)
         timer = setTimeout(() => {
           that.justHeight()
         }, 50)
       }
-      document.body.onscroll = function (e) {
+      document.body.onscroll = function(e) {
         //固定head
         let scrollTop = document.body.scrollTop + document.documentElement.scrollTop
         if (scrollTop >= that.$refs.votebox.offsetTop) {
           if (!that.voteHeadBarHeight) {
             that.voteHeadBarHeight = that.$refs.voteheader.offsetHeight
             that.voteHeadBarWidth = that.$refs.voteheader.offsetWidth
-            that.voteHeadBarTopPx = window.getComputedStyle(that.$refs.votebox, null)["padding-top"]
+            that.voteHeadBarTopPx = window.getComputedStyle(that.$refs.votebox, null)['padding-top']
             that.$refs.tablebox.style.top = that.voteHeadBarHeight + 'px'
             that.$refs.submitbtnbox.style.top = that.voteHeadBarHeight + 'px'
             that.$refs.tablebtnbox.style.height = that.$refs.tablebtnbox.offsetHeight + that.voteHeadBarHeight + 'px'
             that.$refs.voteheader.style.width = that.voteHeadBarWidth + 'px'
-            that.$refs.voteheader.style["z-index"] = 100
-            that.$refs.voteheader.style.background = "white"
-            that.$refs.voteheader.style.top = "0"
+            that.$refs.voteheader.style['z-index'] = 100
+            that.$refs.voteheader.style.background = 'white'
+            that.$refs.voteheader.style.top = '0'
           }
           that.$refs.tablebox.style.position = 'relative'
           that.$refs.submitbtnbox.style.position = 'relative'
           that.$refs.voteheader.style.position = 'fixed'
           that.$refs.voteheader.style.background = 'white'
-          that.$refs.voteheader.style["padding-top"] = that.voteHeadBarTopPx
+          that.$refs.voteheader.style['padding-top'] = that.voteHeadBarTopPx
 
         } else {
           that.$refs.tablebox.style.position = 'static'
           that.$refs.submitbtnbox.style.position = 'static'
           that.$refs.tablebox.style.top = that.voteHeadBarHeight + 'px'
           that.$refs.voteheader.style.position = 'static'
-          that.$refs.voteheader.style["padding-top"] = "0"
+          that.$refs.voteheader.style['padding-top'] = '0'
         }
       }
     },
@@ -223,11 +223,11 @@
               this.count = res.data.data.countNum
             } else {
               this.count = 0
-              console.error("请求计票结果出错")
+              console.error('请求计票结果出错')
             }
           }).catch((err) => {
             this.count = 0
-            console.error("请求计票结果出错")
+            console.error('请求计票结果出错')
           })
         } else {
           //计票员（写两遍我也很无奈啊
@@ -239,11 +239,11 @@
               this.count = res.data.data
             } else {
               this.count = 0
-              console.error("请求计票结果出错")
+              console.error('请求计票结果出错')
             }
           }).catch((err) => {
             this.count = 0
-            console.error("请求计票结果出错")
+            console.error('请求计票结果出错')
           })
         }
 
@@ -267,10 +267,10 @@
         this.initCount()
         //TODO: 注意这里修改计票标题，以及计票结果标题
         if (this.type === 'party') {
-          this.title = '上海大学第五届教职工代表大会工会委员'
+          // this.title = '上海大学第五届教职工代表大会工会委员'
           this.maxVoteNum = localStorage.getItem('partyMaxVoteNum')
         } else {
-          this.title = '上海大学第五届教职工代表大会经审委员'
+          // this.title = '上海大学第五届教职工代表大会经审委员'
           this.maxVoteNum = localStorage.getItem('groupMaxVoteNum')
         }
         if (this.admin) {
@@ -287,16 +287,16 @@
         this.spin = true
         axios({
           url: URL,
-          method: "POST",
+          method: 'POST',
           data: {
-            "order": order
+            'order': order
           }
         }).then((res) => {
           this.spin = false
-          if (res.data.code === "SUCCESS") {
+          if (res.data.code === 'SUCCESS') {
             this.items = res.data.data
           } else {
-            this.$Notice.warning({title: `出错，提示：${res.data.message}`})
+            this.$Notice.warning({ title: `出错，提示：${res.data.message}` })
           }
           //初始化一个votes数组，每个元素是一个长度为3的数组（赞成、不赞成、弃权）
           this.votes = new Array(this.items.length)
@@ -307,7 +307,7 @@
           gotData()
         }).catch((err) => {
           this.spin = false
-          this.$Notice.warning({title: `出错，提示：${err}`})
+          this.$Notice.warning({ title: `出错，提示：${err}` })
           this.votes = new Array(this.items.length)
           for (let i = 0; i < this.votes.length; i++) {
             this.votes[i] = new Array(3)
@@ -315,6 +315,8 @@
           this.handleOnClickReset()
           gotData()
         })
+
+        this.title = localStorage.getItem('title') + '计票'
       },
       handleOnSwitch() {
         localStorage.setItem('switch_percentage', this.switchPercentage ? '1' : '0')
@@ -323,14 +325,14 @@
       },
       handleOnClickSubmit() {
         if (this.voteNum > this.maxVoteNum) {
-          this.$Notice.warning({title: "每张选票至多选" + this.maxVoteNum + "人！"})
+          this.$Notice.warning({ title: '每张选票至多选' + this.maxVoteNum + '人！' })
           return
         }
         this.modal = true
       },
       handleOnClickReset() {
         for (let i = 0; i < this.votes.length; i++) {
-          this.$set(this.votes, i, "0")
+          this.$set(this.votes, i, '0')
         }
       },
       handleOnClickConfirm() {
@@ -354,33 +356,33 @@
         */
         for (let i = 0; i < this.items.length; i++) {
           let obj = {
-            "voted": this.votes[i],
-            "name": encodeURI(this.items[i].name)
+            'voted': this.votes[i],
+            'name': encodeURI(this.items[i].name)
           }
           votesObjArray.push(obj)
         }
         this.spin = true
         axios({
           url: url,
-          method: "post",
+          method: 'post',
           data: {
-            "data": votesObjArray
+            'data': votesObjArray
           }
         }).then((res) => {
           this.spin = false
-          if (res.data.code === "SUCCESS") {
+          if (res.data.code === 'SUCCESS') {
             // localStorage.setItem(`${this.type === 'party' ? 'party' : 'group'}_count`, (this.count + 1).toString())
-            this.count++;
+            this.count++
             this.loadData()
-            this.$Notice.success({title: "本次计票成功！"})
+            this.$Notice.success({ title: '本次计票成功！' })
           } else {
-            this.$Notice.warning({title: `出错，提示：${res.data.message}`})
+            this.$Notice.warning({ title: `出错，提示：${res.data.message}` })
           }
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         }).catch((err) => {
           this.spin = false
-          this.$Notice.warning({title: `出错，提示：${err}`})
+          this.$Notice.warning({ title: `出错，提示：${err}` })
           this.votes = new Array(this.items.length)
           this.handleOnClickReset()
         })
@@ -400,28 +402,28 @@
     },
     computed: {
       voteNum() {
-        let num = 0;
+        let num = 0
         for (let i = 0; i < this.votes.length; i++) {
-          if (this.votes[i] === "0")
-            num++;
+          if (this.votes[i] === '0')
+            num++
         }
-        return num;
+        return num
       },
       voteNum1() {
-        let num = 0;
+        let num = 0
         for (let i = 0; i < this.votes.length; i++) {
-          if (this.votes[i] === "1")
-            num++;
+          if (this.votes[i] === '1')
+            num++
         }
-        return num;
+        return num
       },
       voteNum2() {
-        let num = 0;
+        let num = 0
         for (let i = 0; i < this.votes.length; i++) {
-          if (this.votes[i] === "2")
-            num++;
+          if (this.votes[i] === '2')
+            num++
         }
-        return num;
+        return num
       }
     }
   }
