@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1 :style="{lineHeight:`${103*heightScale}px`,left:`${150*widthScale}px`}" id="title">{{title}}</h1>
+    <h1 :style="{lineHeight:`${103*heightScale}px`,left:`${150*widthScale}px`}" id="title" v-cloak>{{title}}</h1>
     <router-view/>
   </div>
 </template>

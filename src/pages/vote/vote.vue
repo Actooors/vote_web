@@ -273,10 +273,11 @@
           // this.title = '上海大学第五届教职工代表大会经审委员'
           this.maxVoteNum = localStorage.getItem('groupMaxVoteNum')
         }
+        this.title = localStorage.getItem('title')
         if (this.admin) {
           this.title += '计票结果'
         } else {
-          this.title += '候选人'
+          this.title += '计票'
         }
         let URL = ''
         if (this.switchPercentage) {
@@ -315,8 +316,6 @@
           this.handleOnClickReset()
           gotData()
         })
-
-        this.title = localStorage.getItem('title') + '计票'
       },
       handleOnSwitch() {
         localStorage.setItem('switch_percentage', this.switchPercentage ? '1' : '0')
